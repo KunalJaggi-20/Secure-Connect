@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Shadow -->
+    <item
+        android:left="0dp"
+        android:top="3dp">
+        <shape android:shape="oval">
+            <solid android:color="#30000000" />
+        </shape>
+    </item>
+
+    <!-- Main Button -->
+    <item
+        android:bottom="3dp">
+        <shape android:shape="oval">
+            <solid android:color="#10B981" />
+        </shape>
+    </item>
+</layer-list>

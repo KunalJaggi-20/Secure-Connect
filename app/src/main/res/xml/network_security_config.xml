@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <base-config cleartextTrafficPermitted="false">
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </base-config>
+    <domain-config>
+        <!-- Your API domain -->
+        <domain includeSubdomains="true">backend-k0ri.onrender.com</domain>
+        <!-- Add other domains here if needed -->
+    </domain-config>
+</network-security-config>

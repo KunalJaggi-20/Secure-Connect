@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Outer soft glow -->
+    <item>
+        <shape android:shape="oval">
+            <solid android:color="#25FFFFFF"/>
+            <size android:width="60dp" android:height="60dp"/>
+        </shape>
+    </item>
+
+    <!-- Middle glow layer -->
+    <item
+        android:left="6dp"
+        android:right="6dp"
+        android:top="6dp"
+        android:bottom="6dp">
+        <shape android:shape="oval">
+            <solid android:color="#15FFFFFF"/>
+            <size android:width="48dp" android:height="48dp"/>
+        </shape>
+    </item>
+
+    <!-- Main bubble with 3D gradient -->
+    <item
+        android:left="10dp"
+        android:right="10dp"
+        android:top="10dp"
+        android:bottom="10dp">
+        <shape android:shape="oval">
+            <gradient
+                android:angle="135"
+                android:startColor="#404040"
+                android:centerColor="#353535"
+                android:endColor="#2A2A2A"
+                android:type="linear"/>
+            <size android:width="40dp" android:height="40dp"/>
+        </shape>
+    </item>
+
+    <!-- Top highlight for glossy effect -->
+    <item
+        android:left="12dp"
+        android:right="12dp"
+        android:top="12dp"
+        android:bottom="32dp">
+        <shape android:shape="oval">
+            <solid android:color="#40FFFFFF"/>
+        </shape>
+    </item>
+
+</layer-list>

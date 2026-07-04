@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp"
+    android:background="#F9F9F9">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawableStart="@drawable/ic_shield_check"
+            android:drawablePadding="8dp"
+            android:text="Fraud Call Detector"
+            android:textColor="#0077B6"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:paddingBottom="16dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginBottom="16dp">
+
+            <Button
+                android:id="@+id/txt_calls_scanned"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="0 Calls scanned | 0 scams flagged"
+                android:backgroundTint="#E1F0FF"
+                android:textColor="#155B83"
+                android:enabled="false" />
+
+            <Button
+                android:id="@+id/txt_scams_flagged"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Reported Scams Summary"
+                android:backgroundTint="#E1F0FF"
+                android:textColor="#155B83"
+                android:layout_marginTop="8dp"
+                android:enabled="false" />
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/btn_scan_now"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Scan Now"
+            android:textColor="#000000"
+            android:backgroundTint="#FFD166"
+            android:layout_marginBottom="16dp" />
+
+        <EditText
+            android:id="@+id/search_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Search or filter messages"
+            android:background="@drawable/bg_card"
+            android:padding="12dp"
+            android:layout_marginBottom="16dp"
+            android:textColor="#000000"
+            android:textColorHint="#999999" />
+
+        <LinearLayout
+            android:id="@+id/callListContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Historical Examples:"
+            android:textStyle="italic"
+            android:paddingBottom="8dp"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/bg_card"
+            android:padding="12dp"
+            android:layout_marginBottom="12dp"
+            android:elevation="2dp">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Caller ID: 📞 “Bank Alert Dept.” (Scam Likely)"
+                android:textStyle="bold"
+                android:textSize="14sp"
+                android:textColor="#000000" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="High Risk"
+                android:textColor="#E63946"
+                android:textStyle="bold"
+                android:layout_marginTop="6dp" />
+        </LinearLayout>
+
+    </LinearLayout>
+</ScrollView>

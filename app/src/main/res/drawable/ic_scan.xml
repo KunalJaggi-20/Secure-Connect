@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    
+    <!-- QR Scan Icon -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M4,4h6v6H4V4zM14,4h6v6h-6V4zM4,14h6v6H4V14zM16,14h2v2h-2V14zM18,16h2v2h-2V16zM16,18h2v2h-2V18z"/>
+    
+    <!-- Corner brackets -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M2,2v4h2V4h2V2H2zM18,2v2h2v2h2V2H18zM2,18v4h4v-2H4v-2H2zM20,18v2h-2v2h4v-4H20z"
+        android:strokeWidth="1"
+        android:strokeColor="#FFFFFF"/>
+</vector>
