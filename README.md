@@ -2,15 +2,6 @@
 
 **Secure Connect** is an Android app designed to **detect and warn users of SMS scams** using AI and keyword analysis. Built especially for Indian users (including elders), this app works silently in the background to **detect scam messages**, **show alerts**, and **educate users** on digital safety.
 
-> 👨‍💻 Developers
-Aditya – Lead developer, logic, coordinator
-
-> Disha – UI Designer, Alert Flow
-
-> Sujay – Testing, Documentation
-
-> Kunal – Scam Detection Logic, Android Development
----
 
 ## 📱 Features
 
