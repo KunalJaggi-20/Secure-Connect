@@ -7,128 +7,10 @@
     android:background="#F8F9FA"
     tools:context=".MainActivity">
 
-    <!-- Bottom Navigation Bar -->
-    <LinearLayout
-        android:id="@+id/bottomNav"
-        android:layout_width="match_parent"
-        android:layout_height="72dp"
-        android:layout_alignParentBottom="true"
-        android:background="@drawable/bg_bottom_nav_modern"
-        android:orientation="horizontal"
-        android:gravity="center"
-        android:layout_marginHorizontal="16dp"
-        android:layout_marginBottom="16dp"
-        android:paddingVertical="8dp"
-        android:elevation="24dp">
-
-        <FrameLayout
-            android:id="@+id/navHome"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1">
-            <RelativeLayout
-                android:id="@+id/navHomeContainer"
-                android:layout_width="52dp"
-                android:layout_height="52dp"
-                android:layout_gravity="center">
-                <ImageView
-                    android:id="@+id/iconHome"
-                    android:layout_width="26dp"
-                    android:layout_height="26dp"
-                    android:layout_centerInParent="true"
-                    android:src="@drawable/ic_home"
-                    app:tint="#2563EB" />
-            </RelativeLayout>
-        </FrameLayout>
-
-        <FrameLayout
-            android:id="@+id/navTools"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1">
-            <RelativeLayout
-                android:id="@+id/navToolsContainer"
-                android:layout_width="52dp"
-                android:layout_height="52dp"
-                android:layout_gravity="center">
-                <ImageView
-                    android:id="@+id/iconTools"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:layout_centerInParent="true"
-                    android:src="@drawable/ic_grid"
-                    app:tint="#94A3B8" />
-            </RelativeLayout>
-        </FrameLayout>
-
-        <FrameLayout
-            android:id="@+id/navScan"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1">
-            <RelativeLayout
-                android:id="@+id/navScanContainer"
-                android:layout_width="60dp"
-                android:layout_height="60dp"
-                android:layout_gravity="center"
-                android:background="@drawable/bg_scan_fab"
-                android:elevation="8dp">
-                <ImageView
-                    android:id="@+id/iconScan"
-                    android:layout_width="28dp"
-                    android:layout_height="28dp"
-                    android:layout_centerInParent="true"
-                    android:src="@drawable/ic_scan"
-                    app:tint="#FFFFFF" />
-            </RelativeLayout>
-        </FrameLayout>
-
-        <FrameLayout
-            android:id="@+id/navReport"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1">
-            <RelativeLayout
-                android:id="@+id/navReportContainer"
-                android:layout_width="52dp"
-                android:layout_height="52dp"
-                android:layout_gravity="center">
-                <ImageView
-                    android:id="@+id/iconReport"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:layout_centerInParent="true"
-                    android:src="@drawable/ic_document"
-                    app:tint="#94A3B8" />
-            </RelativeLayout>
-        </FrameLayout>
-
-        <FrameLayout
-            android:id="@+id/navStats"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1">
-            <RelativeLayout
-                android:id="@+id/navStatsContainer"
-                android:layout_width="52dp"
-                android:layout_height="52dp"
-                android:layout_gravity="center">
-                <ImageView
-                    android:id="@+id/iconStats"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:layout_centerInParent="true"
-                    android:src="@drawable/ic_stats"
-                    app:tint="#94A3B8" />
-            </RelativeLayout>
-        </FrameLayout>
-    </LinearLayout>
-
     <!-- Main Content -->
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@+id/bottomNav"
         android:scrollbars="none"
         android:fillViewport="true">
 
@@ -146,14 +28,7 @@
                 android:paddingTop="20dp"
                 android:paddingBottom="120dp">
 
-                <ImageView
-                    android:id="@+id/menuIcon"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:src="@drawable/ic_menu"
-                    android:background="@drawable/bg_icon_circle_white"
-                    android:padding="10dp"
-                    app:tint="#2563EB" />
+
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -165,13 +40,22 @@
                     android:textSize="18sp"
                     android:textStyle="bold" />
 
-                <ImageView
-                    android:id="@+id/profileBtn"
+                <androidx.cardview.widget.CardView
                     android:layout_width="40dp"
                     android:layout_height="40dp"
                     android:layout_alignParentEnd="true"
-                    android:src="@drawable/ic_profile"
-                    android:background="@drawable/bg_profile_circle" />
+                    app:cardCornerRadius="20dp"
+                    app:cardElevation="2dp"
+                    app:cardBackgroundColor="#FFFFFF">
+
+                    <ImageView
+                        android:id="@+id/profileBtn"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:src="@drawable/ic_user_avatar"
+                        android:scaleType="fitCenter"
+                        android:contentDescription="Profile" />
+                </androidx.cardview.widget.CardView>
 
                 <RelativeLayout
                 android:layout_width="match_parent"
@@ -355,17 +239,7 @@
                         android:textSize="22sp"
                         android:textStyle="bold" />
 
-                    <TextView
-                        android:id="@+id/viewAllTools"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentEnd="true"
-                        android:layout_centerVertical="true"
-                        android:text="VIEW ALL"
-                        android:textColor="#2563EB"
-                        android:textSize="12sp"
-                        android:textStyle="bold"
-                        android:letterSpacing="0.08" />
+
                 </RelativeLayout>
 
                 <!-- Tools Grid -->
