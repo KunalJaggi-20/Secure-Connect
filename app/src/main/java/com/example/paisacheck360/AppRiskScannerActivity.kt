@@ -27,6 +27,9 @@ class AppRiskScannerActivity : AppCompatActivity() {
     private lateinit var mediumCount: TextView
     private lateinit var lowCount: TextView
 
+    private var pendingUninstallPackage: String? = null
+    private var pendingUninstallAppName: String? = null
+
     // ----------------------------------------
     // 🔥 PHASE-4: Network Threat Receiver
     // ----------------------------------------
@@ -73,13 +76,30 @@ class AppRiskScannerActivity : AppCompatActivity() {
 
         // Register threat listener safely
         try {
-            registerReceiver(
+            androidx.core.content.ContextCompat.registerReceiver(
+                this,
                 networkThreatReceiver,
-                IntentFilter("com.secureconnect.NETWORK_THREAT")
+                IntentFilter("com.secureconnect.NETWORK_THREAT"),
+                androidx.core.content.ContextCompat.RECEIVER_NOT_EXPORTED
             )
             Log.d("SecureConnect-Network", "Receiver registered for AppRiskScannerActivity")
         } catch (e: Exception) {
             Log.e("SecureConnect-Network", "Receiver error: ${e.message}")
+        }
+
+        // Check if an app uninstallation completed
+        pendingUninstallPackage?.let { pkg ->
+            try {
+                packageManager.getPackageInfo(pkg, 0)
+                // App is still present (user canceled uninstall)
+            } catch (_: Exception) {
+                // App was uninstalled!
+                val name = pendingUninstallAppName ?: "App"
+                Toast.makeText(this, "✅ $name uninstalled successfully", Toast.LENGTH_SHORT).show()
+                pendingUninstallPackage = null
+                pendingUninstallAppName = null
+                startScanning()
+            }
         }
     }
 
@@ -111,7 +131,16 @@ class AppRiskScannerActivity : AppCompatActivity() {
         mediumCount = findViewById(R.id.mediumCount)
         lowCount = findViewById(R.id.lowCount)
 
+        findViewById<View>(R.id.backButton)?.setOnClickListener {
+            finish()
+        }
+
+        findViewById<View>(R.id.refreshButton)?.setOnClickListener {
+            startScanning()
+        }
+
         recyclerView.layoutManager = LinearLayoutManager(this)
+        recyclerView.isNestedScrollingEnabled = false
 
         Log.d("AppRiskScanner", "✅ Views initialized")
     }
@@ -128,7 +157,13 @@ class AppRiskScannerActivity : AppCompatActivity() {
                 val scanner = AppScanner(this@AppRiskScannerActivity)
 
                 val apps = scanner.scanAllApps()
-                val stats = scanner.getStatistics()
+                val stats = AppScanStatistics(
+                    totalApps = apps.size,
+                    criticalApps = apps.count { it.riskLevel == RiskLevel.CRITICAL },
+                    highRiskApps = apps.count { it.riskLevel == RiskLevel.HIGH },
+                    mediumRiskApps = apps.count { it.riskLevel == RiskLevel.MEDIUM },
+                    lowRiskApps = apps.count { it.riskLevel == RiskLevel.LOW }
+                )
 
                 updateStatistics(stats)
                 displayApps(apps)
@@ -161,6 +196,9 @@ class AppRiskScannerActivity : AppCompatActivity() {
 
     private fun displayApps(apps: List<AppRiskInfo>) {
         Log.d("AppRiskScanner", "📋 Displaying ${apps.size} apps in RecyclerView")
-        recyclerView.adapter = AppRiskAdapter(apps)
+        recyclerView.adapter = AppRiskAdapter(apps) { app ->
+            pendingUninstallPackage = app.packageName
+            pendingUninstallAppName = app.appName
+        }
     }
 }

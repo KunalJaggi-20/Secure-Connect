@@ -64,7 +64,7 @@
     </RelativeLayout>
 
     <!-- Main Content -->
-    <ScrollView
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/topBar"
@@ -433,5 +433,5 @@
                     android:gravity="center" />
             </LinearLayout>
         </LinearLayout>
-    </ScrollView>
+    </androidx.core.widget.NestedScrollView>
 </RelativeLayout>

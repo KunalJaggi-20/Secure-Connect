@@ -1,15 +1,21 @@
 package com.example.paisacheck360
 
+import android.content.Intent
+import android.net.Uri
+import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 
-class AppRiskAdapter(private val apps: List<AppRiskInfo>) :
-    RecyclerView.Adapter<AppRiskAdapter.ViewHolder>() {
+class AppRiskAdapter(
+    private val apps: List<AppRiskInfo>,
+    private val onUninstallRequested: ((AppRiskInfo) -> Unit)? = null
+) : RecyclerView.Adapter<AppRiskAdapter.ViewHolder>() {
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val appIcon: ImageView = view.findViewById(R.id.appIcon)
@@ -23,6 +29,10 @@ class AppRiskAdapter(private val apps: List<AppRiskInfo>) :
         val totalPermissions: TextView = view.findViewById(R.id.totalPermissions)
         val systemApp: TextView = view.findViewById(R.id.systemApp)
         val detailsContainer: LinearLayout = view.findViewById(R.id.detailsContainer)
+        val mainContent: View = view.findViewById(R.id.mainContent)
+        val expandArrow: ImageView = view.findViewById(R.id.expandArrow)
+        val viewDetailsBtn: View = view.findViewById(R.id.viewDetailsBtn)
+        val uninstallBtn: View = view.findViewById(R.id.uninstallBtn)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -77,11 +87,76 @@ class AppRiskAdapter(private val apps: List<AppRiskInfo>) :
         holder.totalPermissions.text = app.totalPermissions.toString()
         holder.systemApp.text = if (app.isSystemApp) "Yes" else "No"
 
-        // Toggle details on click
-        holder.itemView.setOnClickListener {
+        // Reset details state on bind
+        holder.detailsContainer.visibility = View.GONE
+        holder.expandArrow.rotation = 0f
+
+        // Toggle details on click (only header and arrow, not entire item view)
+        val toggleDetails = View.OnClickListener {
             val isVisible = holder.detailsContainer.visibility == View.VISIBLE
             holder.detailsContainer.visibility = if (isVisible) View.GONE else View.VISIBLE
+            holder.expandArrow.animate().rotation(if (isVisible) 0f else 180f).setDuration(200).start()
         }
+        holder.mainContent.setOnClickListener(toggleDetails)
+        holder.expandArrow.setOnClickListener(toggleDetails)
+
+        // View Details action
+        val handleViewDetails = View.OnClickListener {
+            val context = holder.itemView.context
+            android.util.Log.e("APP_RISK_CLICK", "View Details clicked for ${app.packageName}")
+            try {
+                val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                    data = Uri.parse("package:${app.packageName}")
+                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                }
+                context.startActivity(intent)
+            } catch (e: Exception) {
+                android.util.Log.e("APP_RISK_CLICK", "Error opening settings", e)
+                Toast.makeText(context, "Cannot open app settings: ${e.message}", Toast.LENGTH_SHORT).show()
+            }
+        }
+        holder.viewDetailsBtn.setOnClickListener(handleViewDetails)
+        holder.itemView.findViewById<View>(R.id.viewDetailsText)?.setOnClickListener(handleViewDetails)
+
+        // Uninstall action
+        val handleUninstall = View.OnClickListener {
+            val context = holder.itemView.context
+            android.util.Log.e("APP_RISK_CLICK", "Uninstall clicked for ${app.packageName}, isSystem=${app.isSystemApp}")
+            if (app.isSystemApp) {
+                Toast.makeText(
+                    context,
+                    "⚠️ ${app.appName} is a system app and cannot be uninstalled directly.",
+                    Toast.LENGTH_LONG
+                ).show()
+                try {
+                    val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                        data = Uri.parse("package:${app.packageName}")
+                        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    }
+                    context.startActivity(intent)
+                } catch (e: Exception) {
+                    android.util.Log.e("APP_RISK_CLICK", "Error opening system app settings", e)
+                }
+            } else {
+                onUninstallRequested?.invoke(app)
+                try {
+                    val intent = Intent(Intent.ACTION_DELETE).apply {
+                        data = Uri.parse("package:${app.packageName}")
+                        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    }
+                    context.startActivity(intent)
+                } catch (e: Exception) {
+                    android.util.Log.e("APP_RISK_CLICK", "Error launching uninstaller", e)
+                    Toast.makeText(
+                        context,
+                        "Failed to launch uninstaller: ${e.message}",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+        }
+        holder.uninstallBtn.setOnClickListener(handleUninstall)
+        holder.itemView.findViewById<View>(R.id.uninstallText)?.setOnClickListener(handleUninstall)
     }
 
     override fun getItemCount() = apps.size

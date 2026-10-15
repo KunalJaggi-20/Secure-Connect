@@ -293,11 +293,15 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:layout_marginEnd="6dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="?android:attr/selectableItemBackground"
                     app:cardCornerRadius="12dp"
                     app:cardElevation="0dp"
                     app:cardBackgroundColor="#F3F4F6">
 
                     <TextView
+                        android:id="@+id/viewDetailsText"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:paddingVertical="10dp"
@@ -314,11 +318,15 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:layout_marginStart="6dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="?android:attr/selectableItemBackground"
                     app:cardCornerRadius="12dp"
                     app:cardElevation="0dp"
                     app:cardBackgroundColor="#FEE2E2">
 
                     <TextView
+                        android:id="@+id/uninstallText"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:paddingVertical="10dp"
