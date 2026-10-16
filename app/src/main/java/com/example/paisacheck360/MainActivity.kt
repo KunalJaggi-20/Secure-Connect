@@ -86,6 +86,7 @@ class MainActivity : AppCompatActivity() {
             Manifest.permission.READ_SMS,
             Manifest.permission.READ_CALL_LOG,
             Manifest.permission.READ_PHONE_STATE,
+            Manifest.permission.READ_CONTACTS,
             Manifest.permission.ACCESS_FINE_LOCATION
         )
 
