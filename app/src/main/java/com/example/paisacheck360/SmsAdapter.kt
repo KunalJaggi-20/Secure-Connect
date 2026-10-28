@@ -10,14 +10,16 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
 class ScamAdapter(
-    private val originalList: MutableList<ScamData>,
+    originalList: List<ScamData>,
     private val onBlock: (ScamData) -> Unit,
     private val onReport: (ScamData) -> Unit
 ) : RecyclerView.Adapter<ScamAdapter.ScamViewHolder>() {
 
-    private var filteredList = mutableListOf<ScamData>()
+    private val masterList = mutableListOf<ScamData>()
+    private val filteredList = mutableListOf<ScamData>()
 
     init {
+        masterList.addAll(originalList)
         filteredList.addAll(originalList)
     }
 
@@ -37,18 +39,22 @@ class ScamAdapter(
             "CRITICAL" -> {
                 holder.riskBadge.text = "🔴 CRITICAL RISK"
                 holder.riskBadge.setTextColor(Color.parseColor("#DC2626"))
+                holder.actionButtonsLayout?.visibility = View.VISIBLE
             }
             "HIGH" -> {
                 holder.riskBadge.text = "🟠 HIGH RISK"
                 holder.riskBadge.setTextColor(Color.parseColor("#EA580C"))
+                holder.actionButtonsLayout?.visibility = View.VISIBLE
             }
             "MEDIUM" -> {
                 holder.riskBadge.text = "🟡 MEDIUM RISK"
                 holder.riskBadge.setTextColor(Color.parseColor("#D97706"))
+                holder.actionButtonsLayout?.visibility = View.VISIBLE
             }
             else -> {
                 holder.riskBadge.text = "🟢 SAFE MESSAGE"
                 holder.riskBadge.setTextColor(Color.parseColor("#16A34A"))
+                holder.actionButtonsLayout?.visibility = View.GONE
             }
         }
 
@@ -63,11 +69,15 @@ class ScamAdapter(
         holder.blockBtn.setOnClickListener { onBlock(scam) }
     }
 
+    /**
+     * Safely updates data avoiding reference aliasing bugs.
+     */
     fun updateData(newList: List<ScamData>) {
-        originalList.clear()
-        originalList.addAll(newList)
+        val copy = ArrayList(newList)
+        masterList.clear()
+        masterList.addAll(copy)
         filteredList.clear()
-        filteredList.addAll(newList)
+        filteredList.addAll(copy)
         notifyDataSetChanged()
     }
 
@@ -79,9 +89,15 @@ class ScamAdapter(
         filteredList.clear()
         val q = query.trim().lowercase()
 
-        val matching = originalList.filter { scam ->
-            val matchesRisk = riskLevel.equals("All", ignoreCase = true) ||
-                    scam.risk.equals(riskLevel, ignoreCase = true)
+        val matching = masterList.filter { scam ->
+            val matchesRisk = when (riskLevel.trim().lowercase()) {
+                "all" -> true
+                "critical" -> scam.risk.equals("Critical", ignoreCase = true)
+                "high" -> scam.risk.equals("High", ignoreCase = true)
+                "medium", "med" -> scam.risk.equals("Medium", ignoreCase = true)
+                "safe" -> scam.risk.equals("Safe", ignoreCase = true)
+                else -> true
+            }
             val matchesQuery = q.isEmpty() ||
                     scam.sender.lowercase().contains(q) ||
                     scam.body.lowercase().contains(q)
@@ -97,6 +113,7 @@ class ScamAdapter(
         val message: TextView = view.findViewById(R.id.messageText)
         val riskBadge: TextView = view.findViewById(R.id.riskBadge)
         val timeText: TextView? = view.findViewById(R.id.timeText)
+        val actionButtonsLayout: View? = view.findViewById(R.id.actionButtonsLayout)
         val reportBtn: Button = view.findViewById(R.id.reportBtn)
         val blockBtn: Button = view.findViewById(R.id.blockBtn)
     }

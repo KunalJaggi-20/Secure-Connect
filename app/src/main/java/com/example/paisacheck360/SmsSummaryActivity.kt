@@ -96,7 +96,9 @@ class SmsSummaryActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         checkNotificationAccessState()
-        loadLocalLogs()
+        if (allScamsList.isEmpty()) {
+            loadLocalLogs()
+        }
     }
 
     private fun initViews() {
@@ -282,7 +284,9 @@ class SmsSummaryActivity : AppCompatActivity() {
     }
 
     private fun updateEmptyState() {
-        emptyLayout.visibility = if (adapter.itemCount == 0) View.VISIBLE else View.GONE
+        val isEmpty = adapter.itemCount == 0
+        emptyLayout.visibility = if (isEmpty) View.VISIBLE else View.GONE
+        recyclerViewSms.visibility = if (isEmpty) View.GONE else View.VISIBLE
     }
 
     private fun scanDeviceInbox() {
