@@ -28,6 +28,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var appScanCard: CardView
     private lateinit var linkGuardCard: CardView
     private lateinit var wifiGuardCard: CardView
+    private lateinit var smsGuardCard: CardView
     private lateinit var profileBtn: ImageView
     private lateinit var shieldIcon: ImageView
 
@@ -114,6 +115,7 @@ class MainActivity : AppCompatActivity() {
         appScanCard = findViewById(R.id.appScanCard)
         linkGuardCard = findViewById(R.id.linkGuardCard)
         callerIdCard = findViewById(R.id.callerIdCard)
+        smsGuardCard = findViewById(R.id.smsGuardCard)
         wifiGuardCard = findViewById(R.id.wifiGuardCard)
     }
 
@@ -125,6 +127,11 @@ class MainActivity : AppCompatActivity() {
         callerIdCard.setOnClickListener {
             animateCardClick(callerIdCard)
             startActivity(Intent(this, FraudCallSummaryActivity::class.java))
+        }
+
+        smsGuardCard.setOnClickListener {
+            animateCardClick(smsGuardCard)
+            startActivity(Intent(this, SmsSummaryActivity::class.java))
         }
 
         appScanCard.setOnClickListener {

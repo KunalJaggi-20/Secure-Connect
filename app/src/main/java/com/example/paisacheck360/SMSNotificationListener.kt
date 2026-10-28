@@ -1,108 +1,97 @@
 package com.example.paisacheck360
 
+import android.content.Context
 import android.content.Intent
-import android.os.Build
 import android.service.notification.NotificationListenerService
 import android.service.notification.StatusBarNotification
 import android.util.Log
 import androidx.core.content.ContextCompat
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
-import okhttp3.*
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import org.json.JSONObject
-import java.io.IOException
-import java.util.concurrent.TimeUnit
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class SMSNotificationListener : NotificationListenerService() {
 
-    private val client = OkHttpClient.Builder()
-        .connectTimeout(10, TimeUnit.SECONDS)
-        .build()
-
-    private val apiUrl = "https://backend-k0ri.onrender.com/predict"
-
     override fun onNotificationPosted(sbn: StatusBarNotification?) {
         val pkg = sbn?.packageName ?: return
-        val extras = sbn.notification.extras
-        val title = extras.getString("android.title") ?: "Unknown"
+        val extras = sbn.notification?.extras ?: return
+        val title = extras.getString("android.title") ?: extras.getCharSequence("android.title")?.toString() ?: "Unknown"
         val text = extras.getCharSequence("android.text")?.toString() ?: ""
 
-        // 1. Target Messaging Apps
-        val targetApps = listOf("messaging", "sms", "whatsapp", "telegram", "mms")
+        // Target all SMS, Messaging, WhatsApp, Telegram, and RCS apps
+        val targetApps = listOf("messaging", "sms", "whatsapp", "telegram", "mms", "signal", "viber")
         val isTarget = targetApps.any { pkg.contains(it, ignoreCase = true) }
 
         if (isTarget && text.isNotBlank()) {
-            val risk = analyzeLocalRisk(text)
+            val analysis = SmsScamDetector.analyze(text, title)
 
-            if (risk != "Low") {
-                Log.d("SecureConnect-Notif", "🚨 Risk Detected ($risk): $text")
+            if (analysis.riskLevel != "SAFE") {
+                Log.w("SecureConnect-Notif", "🚨 Notification Risk Detected: [${analysis.riskLevel}] ${analysis.category} | App: $pkg")
 
-                // Log to Firebase for Dashboard
-                saveAlertToFirebase(title, text, risk)
+                // Save locally
+                saveScamLocally(title, text, analysis.riskLevel)
+
+                // Save to Firebase for Dashboard
+                saveAlertToFirebase(title, text, analysis)
 
                 // Trigger UI Popup
-                triggerPopup(title, text, risk)
-
-                // Secondary AI check
-                runApiCheck(title, text)
+                triggerPopup(title, text, analysis)
             }
         }
     }
 
-    private fun analyzeLocalRisk(msg: String): String {
-        val m = msg.lowercase()
-        val highRisk = listOf("loan", "kyc", "blocked", "otp", "verify", "pan", "electricity", "bank")
-        val medRisk = listOf("win", "congrats", "offer", "prize", "gift", "http", "www")
-
-        return when {
-            highRisk.any { m.contains(it) } -> "High"
-            medRisk.any { m.contains(it) } -> "Medium"
-            else -> "Low"
-        }
-    }
-
-    private fun triggerPopup(sender: String, message: String, risk: String) {
+    private fun triggerPopup(sender: String, message: String, analysis: SmsScamDetector.SmsAnalysisResult) {
         val intent = Intent(this, ScamPopupService::class.java).apply {
             putExtra("sender", sender)
             putExtra("body", message)
-            putExtra("risk", risk)
+            putExtra("risk", analysis.riskLevel)
+            putExtra("category", analysis.category)
+            putExtra("explanation", analysis.explanation)
+            putExtra("advice", analysis.advice)
             addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         }
         ContextCompat.startForegroundService(this, intent)
     }
 
-    private fun saveAlertToFirebase(sender: String, message: String, risk: String) {
-        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
-        val db = FirebaseDatabase.getInstance().reference.child("users").child(userId).child("alerts")
+    private fun saveScamLocally(sender: String, body: String, risk: String) {
+        try {
+            val prefs = getSharedPreferences("SecureConnectPrefs", Context.MODE_PRIVATE)
+            val gson = Gson()
+            val existingJson = prefs.getString("scam_logs", "[]")
+            val type = object : TypeToken<MutableList<ScamMessage>>() {}.type
+            val list: MutableList<ScamMessage> = gson.fromJson(existingJson, type) ?: mutableListOf()
 
-        val alertData = mapOf(
-            "sender" to sender,
-            "body" to message,
-            "riskLevel" to risk,
-            "timestamp" to System.currentTimeMillis()
-        )
-        db.push().setValue(alertData)
+            val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault())
+            val dateStr = sdf.format(Date())
+
+            list.add(0, ScamMessage(sender = sender, text = body, date = dateStr, riskLevel = risk))
+            prefs.edit().putString("scam_logs", gson.toJson(list.take(100))).apply()
+            ScamStorage.addScamLog(this, body, risk)
+        } catch (e: Exception) {
+            Log.e("SecureConnect-Notif", "Error saving locally: ${e.message}")
+        }
     }
 
-    private fun runApiCheck(sender: String, message: String) {
-        val json = JSONObject().apply { put("message", message) }
-        val body = RequestBody.create("application/json".toMediaTypeOrNull(), json.toString())
-        val req = Request.Builder().url(apiUrl).post(body).build()
+    private fun saveAlertToFirebase(sender: String, message: String, analysis: SmsScamDetector.SmsAnalysisResult) {
+        try {
+            val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
+            val db = FirebaseDatabase.getInstance().reference.child("users").child(userId).child("alerts")
 
-        client.newCall(req).enqueue(object : Callback {
-            override fun onFailure(call: Call, e: IOException) {
-                Log.e("SecureConnect-API", "API Failure")
-            }
-
-            override fun onResponse(call: Call, response: Response) {
-                val res = response.body?.string()
-                try {
-                    if (JSONObject(res ?: "{}").optBoolean("is_scam", false)) {
-                        triggerPopup(sender, message, "High")
-                    }
-                } catch (e: Exception) { }
-            }
-        })
+            val alertData = mapOf(
+                "sender" to sender,
+                "body" to message,
+                "riskLevel" to analysis.riskLevel,
+                "category" to analysis.category,
+                "score" to analysis.riskScore,
+                "timestamp" to System.currentTimeMillis()
+            )
+            db.push().setValue(alertData)
+        } catch (e: Exception) {
+            Log.e("SecureConnect-Notif", "Firebase error: ${e.message}")
+        }
     }
 }

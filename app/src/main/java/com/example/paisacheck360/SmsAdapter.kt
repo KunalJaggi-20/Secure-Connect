@@ -1,5 +1,7 @@
 package com.example.paisacheck360
 
+import android.graphics.Color
+import android.text.format.DateUtils
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -28,26 +30,65 @@ class ScamAdapter(
 
     override fun onBindViewHolder(holder: ScamViewHolder, position: Int) {
         val scam = filteredList[position]
-        holder.sender.text = "From: ${scam.sender}"
+        holder.sender.text = if (scam.sender.isNotBlank()) scam.sender else "Unknown Sender"
         holder.message.text = scam.body
-        holder.riskBadge.text = when (scam.risk) {
-            "Critical" -> "🔴 CRITICAL"
-            "High" -> "🟠 HIGH"
-            "Medium" -> "🟡 MEDIUM"
-            else -> "🟢 SAFE"
+
+        when (scam.risk.uppercase()) {
+            "CRITICAL" -> {
+                holder.riskBadge.text = "🔴 CRITICAL RISK"
+                holder.riskBadge.setTextColor(Color.parseColor("#DC2626"))
+            }
+            "HIGH" -> {
+                holder.riskBadge.text = "🟠 HIGH RISK"
+                holder.riskBadge.setTextColor(Color.parseColor("#EA580C"))
+            }
+            "MEDIUM" -> {
+                holder.riskBadge.text = "🟡 MEDIUM RISK"
+                holder.riskBadge.setTextColor(Color.parseColor("#D97706"))
+            }
+            else -> {
+                holder.riskBadge.text = "🟢 SAFE MESSAGE"
+                holder.riskBadge.setTextColor(Color.parseColor("#16A34A"))
+            }
         }
+
+        val timeSpan = DateUtils.getRelativeTimeSpanString(
+            scam.timestamp,
+            System.currentTimeMillis(),
+            DateUtils.MINUTE_IN_MILLIS
+        )
+        holder.timeText?.text = timeSpan
 
         holder.reportBtn.setOnClickListener { onReport(scam) }
         holder.blockBtn.setOnClickListener { onBlock(scam) }
     }
 
-    fun filterByRisk(level: String) {
+    fun updateData(newList: List<ScamData>) {
+        originalList.clear()
+        originalList.addAll(newList)
         filteredList.clear()
-        if (level == "All") {
-            filteredList.addAll(originalList)
-        } else {
-            filteredList.addAll(originalList.filter { it.risk.equals(level, true) })
+        filteredList.addAll(newList)
+        notifyDataSetChanged()
+    }
+
+    fun filterByRisk(level: String) {
+        filter("", level)
+    }
+
+    fun filter(query: String, riskLevel: String) {
+        filteredList.clear()
+        val q = query.trim().lowercase()
+
+        val matching = originalList.filter { scam ->
+            val matchesRisk = riskLevel.equals("All", ignoreCase = true) ||
+                    scam.risk.equals(riskLevel, ignoreCase = true)
+            val matchesQuery = q.isEmpty() ||
+                    scam.sender.lowercase().contains(q) ||
+                    scam.body.lowercase().contains(q)
+            matchesRisk && matchesQuery
         }
+
+        filteredList.addAll(matching)
         notifyDataSetChanged()
     }
 
@@ -55,6 +96,7 @@ class ScamAdapter(
         val sender: TextView = view.findViewById(R.id.senderText)
         val message: TextView = view.findViewById(R.id.messageText)
         val riskBadge: TextView = view.findViewById(R.id.riskBadge)
+        val timeText: TextView? = view.findViewById(R.id.timeText)
         val reportBtn: Button = view.findViewById(R.id.reportBtn)
         val blockBtn: Button = view.findViewById(R.id.blockBtn)
     }

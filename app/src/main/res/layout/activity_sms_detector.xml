@@ -1,95 +1,426 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="#F9F9F9">
+    android:background="#F8F9FA">
 
-    <!-- Toolbar with back button -->
-    <LinearLayout
+    <!-- Top App Bar -->
+    <RelativeLayout
+        android:id="@+id/topBar"
         android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:background="#155B83"
-        android:gravity="center_vertical"
-        android:padding="12dp">
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_top_bar_rounded"
+        android:paddingHorizontal="16dp"
+        android:paddingTop="16dp"
+        android:paddingBottom="20dp"
+        android:elevation="4dp">
 
         <ImageView
             android:id="@+id/btnBack"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:src="@android:drawable/ic_media_previous"
-            android:tint="#FFFFFF"
-           />
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_centerVertical="true"
+            android:src="@drawable/ic_back"
+            android:background="@drawable/bg_icon_ripple"
+            android:padding="10dp"
+            app:tint="#FFFFFF" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Suspicious SMS Detector"
+            android:layout_centerInParent="true"
+            android:text="SMS Fraud Guard"
             android:textColor="#FFFFFF"
-            android:textStyle="bold"
-            android:textSize="16sp"
-            android:layout_marginStart="12dp"/>
-    </LinearLayout>
+            android:textSize="20sp"
+            android:textStyle="bold" />
 
-    <ScrollView
+        <ImageView
+            android:id="@+id/btnTestDemo"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:src="@drawable/ic_shield_alert"
+            android:background="@drawable/bg_icon_ripple"
+            android:padding="10dp"
+            app:tint="#FFFFFF" />
+    </RelativeLayout>
+
+    <!-- Main Content -->
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="16dp">
+        android:layout_below="@id/topBar"
+        android:scrollbars="none"
+        android:fillViewport="true">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:paddingHorizontal="16dp"
+            android:paddingTop="16dp"
+            android:paddingBottom="24dp">
 
-            <!-- Stats -->
-            <TextView
-                android:id="@+id/tvStats"
+            <!-- Summary Cards -->
+            <LinearLayout
+                android:id="@+id/summaryCards"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="0 SMS scanned | 0 scams flagged"
-                android:gravity="center"
-                android:textColor="#155B83"
-                android:padding="12dp"
-                android:background="@drawable/bg_card"
-                android:layout_marginBottom="12dp"/>
+                android:orientation="horizontal"
+                android:weightSum="3"
+                android:layout_marginBottom="16dp">
 
-            <!-- Reported Scams Button -->
-            <Button
-                android:id="@+id/btnReportedScams"
+                <!-- Scanned Card -->
+                <androidx.cardview.widget.CardView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="6dp"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="2dp"
+                    app:cardBackgroundColor="#FFFFFF">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="14dp"
+                        android:gravity="center">
+
+                        <TextView
+                            android:id="@+id/tvScannedCount"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="0"
+                            android:textColor="#155B83"
+                            android:textSize="22sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="SCANNED"
+                            android:textColor="#6B7280"
+                            android:textSize="10sp"
+                            android:textStyle="bold"
+                            android:layout_marginTop="2dp" />
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
+
+                <!-- Scam Flagged Card -->
+                <androidx.cardview.widget.CardView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginHorizontal="3dp"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="2dp"
+                    app:cardBackgroundColor="#FFFFFF">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="14dp"
+                        android:gravity="center">
+
+                        <TextView
+                            android:id="@+id/tvScamCount"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="0"
+                            android:textColor="#DC2626"
+                            android:textSize="22sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="SCAMS"
+                            android:textColor="#DC2626"
+                            android:textSize="10sp"
+                            android:textStyle="bold"
+                            android:layout_marginTop="2dp" />
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
+
+                <!-- Safe Card -->
+                <androidx.cardview.widget.CardView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="6dp"
+                    app:cardCornerRadius="16dp"
+                    app:cardElevation="2dp"
+                    app:cardBackgroundColor="#FFFFFF">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="14dp"
+                        android:gravity="center">
+
+                        <TextView
+                            android:id="@+id/tvSafeCount"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="0"
+                            android:textColor="#16A34A"
+                            android:textSize="22sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="SAFE"
+                            android:textColor="#16A34A"
+                            android:textSize="10sp"
+                            android:textStyle="bold"
+                            android:layout_marginTop="2dp" />
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
+            </LinearLayout>
+
+            <!-- Quick Action Row -->
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Reported Scams Summary"
-                android:backgroundTint="#E1F0FF"
-                android:textColor="#155B83"
-                android:layout_marginBottom="12dp"/>
+                android:orientation="horizontal"
+                android:layout_marginBottom="12dp">
 
-            <!-- Scan Now -->
-            <Button
-                android:id="@+id/btnScanNow"
+                <Button
+                    android:id="@+id/btnScanNow"
+                    android:layout_width="0dp"
+                    android:layout_height="46dp"
+                    android:layout_weight="1"
+                    android:text="⚡ Scan Inbox"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    android:backgroundTint="#155B83"
+                    android:textColor="#FFFFFF"
+                    android:layout_marginEnd="6dp" />
+
+                <Button
+                    android:id="@+id/btnDemoSimulate"
+                    android:layout_width="0dp"
+                    android:layout_height="46dp"
+                    android:layout_weight="1"
+                    android:text="🧪 Demo Simulator"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    android:backgroundTint="#6366F1"
+                    android:textColor="#FFFFFF"
+                    android:layout_marginStart="6dp" />
+            </LinearLayout>
+
+            <!-- Notification Access Helper Card -->
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cardNotifAccess"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Scan Now"
-                android:backgroundTint="#FFD166"
-                android:textColor="#000000"
-                android:layout_marginBottom="12dp"/>
+                android:layout_marginBottom="14dp"
+                app:cardCornerRadius="14dp"
+                app:cardElevation="2dp"
+                app:cardBackgroundColor="#EFF6FF">
 
-            <!-- Search Box -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:padding="12dp"
+                    android:gravity="center_vertical">
+
+                    <ImageView
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:src="@drawable/ic_bell"
+                        app:tint="#2563EB" />
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginStart="10dp"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Enable WhatsApp &amp; RCS Scanning"
+                            android:textColor="#1E40AF"
+                            android:textSize="13sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Grant notification access to detect scams"
+                            android:textColor="#3B82F6"
+                            android:textSize="11sp" />
+                    </LinearLayout>
+
+                    <Button
+                        android:id="@+id/btnGrantNotifAccess"
+                        android:layout_width="wrap_content"
+                        android:layout_height="36dp"
+                        android:text="Enable"
+                        android:textSize="11sp"
+                        android:backgroundTint="#2563EB"
+                        android:textColor="#FFFFFF" />
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- Search Filter -->
             <EditText
                 android:id="@+id/etSearch"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="Search or filter messages"
-                android:padding="12dp"
-                android:background="@android:drawable/editbox_background"
-                android:layout_marginBottom="16dp"/>
+                android:layout_height="44dp"
+                android:hint="Search by sender or keyword..."
+                android:textColor="#1F2937"
+                android:textSize="13sp"
+                android:background="@drawable/edittext_bg"
+                android:paddingHorizontal="14dp"
+                android:singleLine="true"
+                android:layout_marginBottom="12dp" />
 
-            <!-- SMS List Container -->
+            <!-- Filter Chips -->
+            <HorizontalScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:scrollbars="none"
+                android:layout_marginBottom="12dp">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <Button
+                        android:id="@+id/tabAll"
+                        android:layout_width="wrap_content"
+                        android:layout_height="36dp"
+                        android:text="All"
+                        android:textSize="11sp"
+                        android:backgroundTint="#155B83"
+                        android:textColor="#FFFFFF"
+                        android:layout_marginEnd="6dp" />
+
+                    <Button
+                        android:id="@+id/tabCritical"
+                        android:layout_width="wrap_content"
+                        android:layout_height="36dp"
+                        android:text="Critical"
+                        android:textSize="11sp"
+                        android:backgroundTint="#F3F4F6"
+                        android:textColor="#374151"
+                        android:layout_marginEnd="6dp" />
+
+                    <Button
+                        android:id="@+id/tabHigh"
+                        android:layout_width="wrap_content"
+                        android:layout_height="36dp"
+                        android:text="High"
+                        android:textSize="11sp"
+                        android:backgroundTint="#F3F4F6"
+                        android:textColor="#374151"
+                        android:layout_marginEnd="6dp" />
+
+                    <Button
+                        android:id="@+id/tabMedium"
+                        android:layout_width="wrap_content"
+                        android:layout_height="36dp"
+                        android:text="Medium"
+                        android:textSize="11sp"
+                        android:backgroundTint="#F3F4F6"
+                        android:textColor="#374151"
+                        android:layout_marginEnd="6dp" />
+
+                    <Button
+                        android:id="@+id/tabSafe"
+                        android:layout_width="wrap_content"
+                        android:layout_height="36dp"
+                        android:text="Safe"
+                        android:textSize="11sp"
+                        android:backgroundTint="#F3F4F6"
+                        android:textColor="#374151" />
+                </LinearLayout>
+            </HorizontalScrollView>
+
+            <!-- Loading Progress -->
+            <ProgressBar
+                android:id="@+id/scanProgressBar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:visibility="gone"
+                android:layout_marginVertical="16dp" />
+
+            <!-- Empty State -->
+            <LinearLayout
+                android:id="@+id/emptyLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:padding="32dp"
+                android:visibility="gone">
+
+                <ImageView
+                    android:layout_width="64dp"
+                    android:layout_height="64dp"
+                    android:src="@drawable/ic_check_circle"
+                    app:tint="#10B981" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="No Threat Messages Found"
+                    android:textColor="#1F2937"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:layout_marginTop="12dp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Tap 'Scan Inbox' or 'Demo Simulator' to test messages"
+                    android:textColor="#6B7280"
+                    android:textSize="12sp"
+                    android:layout_marginTop="4dp"
+                    android:gravity="center" />
+            </LinearLayout>
+
+            <!-- RecyclerView for Scam List -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerViewSms"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:nestedScrollingEnabled="false" />
+
+            <!-- Fallback container for compatibility -->
             <LinearLayout
                 android:id="@+id/smsListContainer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"/>
+                android:orientation="vertical"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/tvStats"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone" />
+
+            <Button
+                android:id="@+id/btnReportedScams"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone" />
 
         </LinearLayout>
-    </ScrollView>
-</LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+</RelativeLayout>
