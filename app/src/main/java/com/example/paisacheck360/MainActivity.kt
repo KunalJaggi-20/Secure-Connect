@@ -32,7 +32,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var linkGuardCard: CardView
     private lateinit var wifiGuardCard: CardView
     private lateinit var smsGuardCard: CardView
-    private lateinit var logsCard: CardView
     private lateinit var threatsCard: CardView
     private lateinit var alertsCard: CardView
     private lateinit var threatCountText: TextView
@@ -78,7 +77,6 @@ class MainActivity : AppCompatActivity() {
         callerIdCard = findViewById(R.id.callerIdCard)
         smsGuardCard = findViewById(R.id.smsGuardCard)
         wifiGuardCard = findViewById(R.id.wifiGuardCard)
-        logsCard = findViewById(R.id.logsCard)
         threatsCard = findViewById(R.id.threatsCard)
         alertsCard = findViewById(R.id.alertsCard)
         threatCountText = findViewById(R.id.threatCountText)
@@ -115,11 +113,6 @@ class MainActivity : AppCompatActivity() {
             startActivity(Intent(this, LinkScannerActivity::class.java))
         }
 
-        logsCard.setOnClickListener {
-            animateCardClick(logsCard)
-            startActivity(Intent(this, LogsActivity::class.java))
-        }
-
         threatsCard.setOnClickListener {
             animateCardClick(threatsCard)
             startActivity(Intent(this, SmsSummaryActivity::class.java))
@@ -127,7 +120,7 @@ class MainActivity : AppCompatActivity() {
 
         alertsCard.setOnClickListener {
             animateCardClick(alertsCard)
-            startActivity(Intent(this, LogsActivity::class.java))
+            startActivity(Intent(this, SmsSummaryActivity::class.java))
         }
     }
 
