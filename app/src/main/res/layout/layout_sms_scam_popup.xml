@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingHorizontal="16dp"
+    android:paddingTop="20dp"
+    android:paddingBottom="16dp">
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardCornerRadius="24dp"
+        app:cardElevation="16dp"
+        app:cardBackgroundColor="#FFFFFF">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- Alert Header Banner -->
+            <RelativeLayout
+                android:id="@+id/headerBanner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#DC2626"
+                android:paddingHorizontal="16dp"
+                android:paddingVertical="14dp">
+
+                <ImageView
+                    android:id="@+id/iconAlert"
+                    android:layout_width="26dp"
+                    android:layout_height="26dp"
+                    android:layout_centerVertical="true"
+                    android:src="@drawable/ic_shield_alert"
+                    app:tint="#FFFFFF" />
+
+                <TextView
+                    android:id="@+id/txtScamRiskBadge"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_toEndOf="@id/iconAlert"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="10dp"
+                    android:text="🚨 FRAUD SMS DETECTED"
+                    android:textColor="#FFFFFF"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:letterSpacing="0.03" />
+
+                <ImageView
+                    android:id="@+id/btnDismissTop"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:src="@drawable/ic_block"
+                    android:background="@drawable/bg_icon_ripple"
+                    android:padding="6dp"
+                    app:tint="#FFFFFF" />
+            </RelativeLayout>
+
+            <!-- Card Body Content -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="20dp">
+
+                <!-- Threat Category -->
+                <TextView
+                    android:id="@+id/txtScamCategory"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Bank &amp; KYC Phishing Scam"
+                    android:textColor="#1F2937"
+                    android:textSize="17sp"
+                    android:textStyle="bold" />
+
+                <!-- Sender info -->
+                <TextView
+                    android:id="@+id/txtScamSender"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="From: +919876543210"
+                    android:textColor="#6B7280"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+
+                <!-- Message Box -->
+                <androidx.cardview.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    app:cardCornerRadius="14dp"
+                    app:cardElevation="0dp"
+                    app:cardBackgroundColor="#F3F4F6">
+
+                    <TextView
+                        android:id="@+id/txtScamBody"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Message body goes here..."
+                        android:textColor="#1F2937"
+                        android:textSize="13sp"
+                        android:lineSpacingExtra="3dp"
+                        android:padding="14dp" />
+                </androidx.cardview.widget.CardView>
+
+                <!-- Warning Advice -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="12dp"
+                    android:gravity="center_vertical">
+
+                    <ImageView
+                        android:layout_width="18dp"
+                        android:layout_height="18dp"
+                        android:src="@drawable/ic_warning"
+                        app:tint="#DC2626" />
+
+                    <TextView
+                        android:id="@+id/txtScamAdvice"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginStart="8dp"
+                        android:text="Do not click links or share bank OTP."
+                        android:textColor="#B91C1C"
+                        android:textSize="12sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <!-- Action Buttons -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="18dp">
+
+                    <Button
+                        android:id="@+id/btnDismiss"
+                        android:layout_width="0dp"
+                        android:layout_height="44dp"
+                        android:layout_weight="1"
+                        android:text="Dismiss"
+                        android:textSize="12sp"
+                        android:backgroundTint="#4B5563"
+                        android:textColor="#FFFFFF"
+                        android:layout_marginEnd="6dp" />
+
+                    <Button
+                        android:id="@+id/btnReport"
+                        android:layout_width="0dp"
+                        android:layout_height="44dp"
+                        android:layout_weight="1"
+                        android:text="🚨 Report Scam"
+                        android:textSize="12sp"
+                        android:textStyle="bold"
+                        android:backgroundTint="#DC2626"
+                        android:textColor="#FFFFFF"
+                        android:layout_marginStart="6dp" />
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+</LinearLayout>

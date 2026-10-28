@@ -38,8 +38,10 @@ class SMSNotificationListener : NotificationListenerService() {
                 // Save to Firebase for Dashboard
                 saveAlertToFirebase(title, text, analysis)
 
-                // Trigger UI Popup
-                triggerPopup(title, text, analysis)
+                // Trigger UI Popup (debounced so it doesn't double-fire with SMSReceiver)
+                if (SmsScamDetector.shouldTriggerPopup(text)) {
+                    triggerPopup(title, text, analysis)
+                }
             }
         }
     }

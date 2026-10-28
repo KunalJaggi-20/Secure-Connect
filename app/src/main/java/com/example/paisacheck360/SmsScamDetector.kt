@@ -21,6 +21,22 @@ object SmsScamDetector {
         val advice: String
     )
 
+    @Volatile
+    private var lastAlertText: String = ""
+    @Volatile
+    private var lastAlertTimestamp: Long = 0L
+
+    @Synchronized
+    fun shouldTriggerPopup(message: String): Boolean {
+        val now = System.currentTimeMillis()
+        if (message.trim().equals(lastAlertText.trim(), ignoreCase = true) && (now - lastAlertTimestamp) < 6000L) {
+            return false
+        }
+        lastAlertText = message.trim()
+        lastAlertTimestamp = now
+        return true
+    }
+
     // Common Indian Financial and Telecom Scam Triggers
     private val KYC_BANKING_TRIGGERS = listOf(
         "kyc", "pan card", "aadhaar", "pan update", "account suspended", "account blocked",

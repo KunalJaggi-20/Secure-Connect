@@ -38,18 +38,20 @@ class SMSReceiver : BroadcastReceiver() {
                     // 2. Sync to Firebase real-time database
                     syncToFirebase(sender, body, analysis)
 
-                    // 3. Launch floating HUD overlay / notification
-                    val popupIntent = Intent(context, ScamPopupService::class.java).apply {
-                        putExtra("sender", sender)
-                        putExtra("body", body)
-                        putExtra("risk", analysis.riskLevel)
-                        putExtra("category", analysis.category)
-                        putExtra("explanation", analysis.explanation)
-                        putExtra("advice", analysis.advice)
-                        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                    }
+                    // 3. Launch floating HUD overlay / notification (debounced)
+                    if (SmsScamDetector.shouldTriggerPopup(body)) {
+                        val popupIntent = Intent(context, ScamPopupService::class.java).apply {
+                            putExtra("sender", sender)
+                            putExtra("body", body)
+                            putExtra("risk", analysis.riskLevel)
+                            putExtra("category", analysis.category)
+                            putExtra("explanation", analysis.explanation)
+                            putExtra("advice", analysis.advice)
+                            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                        }
 
-                    ContextCompat.startForegroundService(context, popupIntent)
+                        ContextCompat.startForegroundService(context, popupIntent)
+                    }
                 } else {
                     Log.d("SecureConnect-SMS", "Message evaluated as SAFE.")
                 }
