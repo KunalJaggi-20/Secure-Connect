@@ -161,10 +161,10 @@ class SmsSummaryActivity : AppCompatActivity() {
         currentFilterRisk = risk
         val tabs = listOf(tabAll, tabCritical, tabHigh, tabMedium, tabSafe)
         for (tab in tabs) {
-            tab.setBackgroundColor(Color.parseColor("#F3F4F6"))
+            tab.backgroundTintList = android.content.res.ColorStateList.valueOf(Color.parseColor("#F3F4F6"))
             tab.setTextColor(Color.parseColor("#374151"))
         }
-        selectedBtn.setBackgroundColor(Color.parseColor("#155B83"))
+        selectedBtn.backgroundTintList = android.content.res.ColorStateList.valueOf(Color.parseColor("#155B83"))
         selectedBtn.setTextColor(Color.WHITE)
 
         adapter.filter(etSearch.text.toString(), currentFilterRisk)
@@ -195,25 +195,39 @@ class SmsSummaryActivity : AppCompatActivity() {
     }
 
     private fun loadLocalLogs() {
-        val prefs = getSharedPreferences("SecureConnectPrefs", Context.MODE_PRIVATE)
-        val json = prefs.getString("scam_logs", "[]")
-        val type = object : TypeToken<List<ScamMessage>>() {}.type
-        val storedMessages: List<ScamMessage> = gson.fromJson(json, type) ?: emptyList()
-
         allScamsList.clear()
 
-        if (storedMessages.isNotEmpty()) {
-            for (msg in storedMessages) {
-                allScamsList.add(
-                    ScamData(
-                        sender = msg.sender,
-                        body = msg.text,
-                        risk = msg.riskLevel,
-                        timestamp = parseDateToMillis(msg.date)
-                    )
-                )
+        try {
+            val prefs = getSharedPreferences("SecureConnectPrefs", Context.MODE_PRIVATE)
+            val json = prefs.getString("scam_logs", "[]")
+            val type = object : TypeToken<List<ScamMessage>>() {}.type
+            val storedMessages: List<ScamMessage>? = try {
+                gson.fromJson(json, type)
+            } catch (e: Exception) {
+                null
             }
-        } else {
+
+            if (!storedMessages.isNullOrEmpty()) {
+                for (msg in storedMessages) {
+                    val sender = msg?.sender?.takeIf { it.isNotBlank() } ?: "Unknown"
+                    val body = msg?.text.orEmpty()
+                    val risk = msg?.riskLevel?.takeIf { it.isNotBlank() } ?: "Safe"
+                    val dateStr = msg?.date.orEmpty()
+                    allScamsList.add(
+                        ScamData(
+                            sender = sender,
+                            body = body,
+                            risk = risk,
+                            timestamp = parseDateToMillis(dateStr)
+                        )
+                    )
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
+        if (allScamsList.isEmpty()) {
             // Seed sample threat demonstrations so evaluators immediately see rich functionality
             allScamsList.add(
                 ScamData(

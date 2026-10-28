@@ -3,6 +3,7 @@ package com.example.paisacheck360
 import android.Manifest
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -19,6 +20,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
 import com.google.firebase.auth.FirebaseAuth
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 
 class MainActivity : AppCompatActivity() {
 
@@ -29,18 +32,19 @@ class MainActivity : AppCompatActivity() {
     private lateinit var linkGuardCard: CardView
     private lateinit var wifiGuardCard: CardView
     private lateinit var smsGuardCard: CardView
+    private lateinit var logsCard: CardView
+    private lateinit var threatsCard: CardView
+    private lateinit var alertsCard: CardView
+    private lateinit var threatCountText: TextView
+    private lateinit var alertCountText: TextView
     private lateinit var profileBtn: ImageView
     private lateinit var shieldIcon: ImageView
 
-    // Permission Launcher with Diagnostic Logging
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
     ) { perms ->
         perms.forEach { (perm, isGranted) ->
             Log.d(TAG, "Permission: $perm | Granted: $isGranted")
-        }
-        if (perms[Manifest.permission.RECEIVE_SMS] == true) {
-            Toast.makeText(this, "SMS Security Active ✅", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -53,60 +57,17 @@ class MainActivity : AppCompatActivity() {
         bindViews()
         setupClickListeners()
 
-        // 1. Request standard permissions
+        // Request standard core permissions smoothly
         checkAndRequestPermissions()
-
-        // 2. NEW: Request Overlay Permission (Required for Call & Scam Popups)
-        checkOverlayPermission()
 
         Handler(Looper.getMainLooper()).postDelayed({
             animateShield()
-        }, 100)
+        }, 150)
     }
 
-    private fun checkOverlayPermission() {
-        if (!Settings.canDrawOverlays(this)) {
-            Log.w(TAG, "Overlay permission missing. Redirecting user...")
-
-            // Show a toast so the user knows why they are being sent to settings
-            Toast.makeText(this, "Enable 'Display over other apps' for Scam Alerts", Toast.LENGTH_LONG).show()
-
-            val intent = Intent(
-                Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                Uri.parse("package:$packageName")
-            )
-            startActivity(intent)
-        } else {
-            Log.d(TAG, "Overlay permission already granted ✅")
-        }
-    }
-
-    private fun checkAndRequestPermissions() {
-        val perms = mutableListOf(
-            Manifest.permission.RECEIVE_SMS,
-            Manifest.permission.READ_SMS,
-            Manifest.permission.READ_CALL_LOG,
-            Manifest.permission.READ_PHONE_STATE,
-            Manifest.permission.READ_CONTACTS,
-            Manifest.permission.ACCESS_FINE_LOCATION
-        )
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            perms.add(Manifest.permission.POST_NOTIFICATIONS)
-        }
-
-        val missing = perms.filter {
-            val status = ContextCompat.checkSelfPermission(this, it) == PackageManager.PERMISSION_GRANTED
-            Log.d(TAG, "Checking $it: ${if (status) "OK" else "MISSING"}")
-            !status
-        }
-
-        if (missing.isNotEmpty()) {
-            Log.w(TAG, "Requesting missing permissions: $missing")
-            requestPermissionLauncher.launch(missing.toTypedArray())
-        } else {
-            Log.d(TAG, "All core security permissions are already granted")
-        }
+    override fun onResume() {
+        super.onResume()
+        updateDashboardStats()
     }
 
     private fun bindViews() {
@@ -117,6 +78,11 @@ class MainActivity : AppCompatActivity() {
         callerIdCard = findViewById(R.id.callerIdCard)
         smsGuardCard = findViewById(R.id.smsGuardCard)
         wifiGuardCard = findViewById(R.id.wifiGuardCard)
+        logsCard = findViewById(R.id.logsCard)
+        threatsCard = findViewById(R.id.threatsCard)
+        alertsCard = findViewById(R.id.alertsCard)
+        threatCountText = findViewById(R.id.threatCountText)
+        alertCountText = findViewById(R.id.alertCountText)
     }
 
     private fun setupClickListeners() {
@@ -147,6 +113,69 @@ class MainActivity : AppCompatActivity() {
         linkGuardCard.setOnClickListener {
             animateCardClick(linkGuardCard)
             startActivity(Intent(this, LinkScannerActivity::class.java))
+        }
+
+        logsCard.setOnClickListener {
+            animateCardClick(logsCard)
+            startActivity(Intent(this, LogsActivity::class.java))
+        }
+
+        threatsCard.setOnClickListener {
+            animateCardClick(threatsCard)
+            startActivity(Intent(this, SmsSummaryActivity::class.java))
+        }
+
+        alertsCard.setOnClickListener {
+            animateCardClick(alertsCard)
+            startActivity(Intent(this, LogsActivity::class.java))
+        }
+    }
+
+    private fun updateDashboardStats() {
+        try {
+            val prefs = getSharedPreferences("SecureConnectPrefs", Context.MODE_PRIVATE)
+            val json = prefs.getString("scam_logs", "[]")
+            val type = object : TypeToken<List<ScamMessage>>() {}.type
+            val stored: List<ScamMessage>? = try {
+                Gson().fromJson(json, type)
+            } catch (e: Exception) {
+                null
+            }
+
+            val threats = stored?.count {
+                it?.riskLevel?.equals("Critical", true) == true ||
+                it?.riskLevel?.equals("High", true) == true
+            } ?: 0
+
+            val alerts = stored?.size ?: 0
+
+            threatCountText.text = threats.toString()
+            alertCountText.text = alerts.toString()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    private fun checkAndRequestPermissions() {
+        val perms = mutableListOf(
+            Manifest.permission.RECEIVE_SMS,
+            Manifest.permission.READ_SMS,
+            Manifest.permission.READ_CALL_LOG,
+            Manifest.permission.READ_PHONE_STATE,
+            Manifest.permission.READ_CONTACTS,
+            Manifest.permission.ACCESS_FINE_LOCATION
+        )
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            perms.add(Manifest.permission.POST_NOTIFICATIONS)
+        }
+
+        val missing = perms.filter {
+            ContextCompat.checkSelfPermission(this, it) != PackageManager.PERMISSION_GRANTED
+        }
+
+        if (missing.isNotEmpty()) {
+            requestPermissionLauncher.launch(missing.toTypedArray())
         }
     }
 
