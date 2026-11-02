@@ -271,14 +271,27 @@ Contributions, issues, and feature requests are welcome!
 
 ---
 
-## 📄 License
+## 👥 Development Team
 
-This project is open-source and distributed under the **MIT License**. See [`LICENSE`](LICENSE) for more details.
+This project is conceptualized, designed, and developed by:
+
+| Member | Role & Key Contributions |
+|---|---|
+| **[Kunal Jaggi](https://github.com/KunalJaggi-20)** | **Team Lead & Lead Android Security Architect**<br/>• Overall system architecture, background services & OS integration<br/>• Core SMS fraud detection & dynamic floating HUD overlay engine<br/>• Permission weighting algorithms & project orchestration |
+| **Anushka More** | **ML & Threat Intelligence Engineer**<br/>• Scam dataset curation & Indian financial fraud pattern modeling<br/>• On-device NLP heuristic analysis for KYC & utility threats<br/>• Phishing keyword clustering & risk scoring pipelines |
+| **Sanika Jagtap** | **Backend & Network Security Engineer**<br/>• Wi-Fi Guard network security inspector & encryption analysis<br/>• Phishing URL & malicious domain heuristic classification<br/>• Firebase real-time database architecture & threat sync |
+| **Vaishnavi Chaudhari** | **UI/UX & Security Experience Designer**<br/>• Material 3 UI design system, custom responsive layouts & themes<br/>• In-call safety radar HUD & interactive risk alert modals<br/>• User accessibility flows, security dashboard & statistics visualizer |
 
 ---
 
-## 👨‍💻 Author & Acknowledgements
+## 📄 License
 
-Developed with ❤️ by **[Kunal Jaggi](https://github.com/KunalJaggi-20)**.
+This project is open-source and distributed under the **MIT License**. See [`LICENSE`](LICENSE) for more details.  
+Copyright (c) 2026 **Kunal Jaggi, Anushka More, Sanika Jagtap, Vaishnavi Chaudhari**.
 
-*Special thanks to the open-source cybersecurity and Android development community.*
+---
+
+## 🙏 Acknowledgements
+
+* **Google Android & Material Design Teams** for Android 15/16 security guidelines.
+* **Open Source Cybersecurity Community** for crowdsourced fraud research and pattern references.
